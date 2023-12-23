@@ -2,27 +2,22 @@ import uiautomation as ui
 import psutil as ps
 import re
 
-
 class showWindows:
     # tabList[i] = (control, procName)
     tabList = {}
     
     def __init__(self):
         ui.SetGlobalSearchTimeout(0.0001)
-    
-    def focusWindowByName(self, name:str)->None:
-        control:ui.WindowControl
-        control = self.tabList[name][0]
-        if control:
-            control.SetFocus()
-        return None
-    
+        
     def showWindow(self, control: ui.WindowControl):
         # print(
         #     f"X\tWnd name : {control.Name}\tCls name : {control.ClassName}\tPID : {control.ProcessId}"
         # )
         processName = ps.Process(control.ProcessId).name()
         self.tabList[control.Name] = (control, processName)
+        if(control.Name == 'Advanced Alt - Tab by THLee'):
+            control.SetFocus()
+            print('focus set.')
         return None
 
     def getTab(self, control: ui.WindowControl, tabList: dict):
@@ -90,16 +85,23 @@ class showWindows:
             self.showWindow(wnd)
             self.getTab(wnd, self.tabList)
             wnd = wnd.GetNextSiblingControl()
-        print(self.tabList)
     
     def searchTabs(self, keyword:str) -> [ui.WindowControl]:
         res = []
         regex = keyword
-        p = re.compile(regex)
+        p = re.compile(regex, flags= re.IGNORECASE)
         keys = self.tabList.keys()
         for key in keys:
             if p.search(key):
                 res.append(key)
         return res
 
+    def focusTab(self, name:str):
+        if name in self.tabList.keys():
+            control:ui.WindowControl = self.tabList[name][0]
+            control.SetFocus()
+            return None
+        else:
+            print("no such tab exist.")
+            return None
 
