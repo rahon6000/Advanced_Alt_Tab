@@ -13,3 +13,9 @@ Search through multiple tabs with keyword
 - Edge browser
 - VScode
 - Windows expolorer
+
+# Pyinstaller
+
+install `pyinstaller`
+
+run `pyinstaller -w -F main.py` in cmd
