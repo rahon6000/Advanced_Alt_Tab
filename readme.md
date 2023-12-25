@@ -4,9 +4,10 @@ Search through multiple tabs with keyword
 
 # Todo
 
-- Implements basic operation
-- Make GUI, Keyboard input
-- Build it to .exe
+- [x] Implements basic operation
+- [x] Make GUI, Keyboard input
+- [ ] Make tab searching method non-blocking.
+- [ ] Build it to .exe
 
 # Current support
 

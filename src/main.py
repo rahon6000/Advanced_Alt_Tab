@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import pystray
-from PIL import Image
+# import pystray
+# from PIL import Image
 import os
 import keyboard
 import showWindows
@@ -156,6 +156,5 @@ previewFrame.grid()
 
 # Loops
 keyboard.on_press(keyInputManager)
-# keyboard.add_hotkey("ctrl+`", showApp)  # 한글 breaks add_hotkey.
 entryVar.trace_add(mode="write", callback=getMatchings)
 root.mainloop()
