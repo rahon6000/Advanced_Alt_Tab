@@ -16,67 +16,67 @@ alpha = 0.7
 sw = showWindows.showWindows()
 searchResult = []
 cursor = 0
+targetLabel:tk.Label
 
 # Events
 def keyInputManager(key: keyboard.KeyboardEvent) -> None:
     global cursor
+    global targetLabel
+    global textbox
+    # print(keyboard._hotkeys['ctrl+`'])
+    if ( keyboard.is_pressed('ctrl+`') ):
+        showApp()
+        return None
+    print(textbox["state"])
+    if ( textbox["state"] == "disabled"):
+        return None
     if key.name == "esc":
         ## hide 
         textbox.delete(0,"end")
-        textbox.config(state="disable")
+        textbox.config(state="disabled")
         root.wm_attributes("-alpha", 0)
-        # root.withdraw()
-        # global icon
-        # icon.run() # this block events....
         
     elif key.name == "enter":
-        ## focus wanted tab
-        name = textbox.get()
-        if(len(name)):
-            print(name)
-            sw.focusTab(name)
-            textbox.delete(0,"end")
-            textbox.config(state="disabled")
-            root.wm_attributes("-alpha", 0)
+        try:
+            name = targetLabel["text"]
+            if(len(name)):
+                sw.focusTab(name)
+                textbox.delete(0,"end")
+                textbox.config(state="disabled")
+                root.wm_attributes("-alpha", 0)
+        except(NameError):
+            return None
             
     elif key.name =="down":
-        cursor += 1
+        refreshCursor( +1 )
     elif key.name == "up":
-        cursor -= 1
-    else:
-        return None
-    refreshSelection()
+        refreshCursor( -1 )
+    
     return None
 
-def quitApp():
+def quitApp(*args ):
     root.quit()
     return None
 
 def showApp() -> None:
-    # TODO: focus is currently NOT set properly.
     # global icon
     # icon.stop()
+    global searchResult
     root.wm_attributes("-alpha", alpha)
     textbox.config(state="normal")
     sw.getTabList()
+    searchResult= sw.searchTabs( textbox.get() )
     root.deiconify()
     root.focus_force()
     textbox.focus_force()
     return None
 
-def getMatchings(dummy):
-    # check the key is just alphabet.
-    global textbox
+def getMatchings(*args):
+    global entryVar
     global searchResult
     global cursor
-    searchResult= sw.searchTabs( textbox.get() )
-    if len(searchResult) == 0:
-        return None
-    # textbox["values"] = searchResult
-    # textbox.event_generate('<Down>')
-    text = ''
-    for tabName in searchResult:
-        text += tabName + '\n'
+    
+    searchResult= sw.searchTabs( entryVar.get() )
     refreshSelection()
     return None
 
@@ -85,44 +85,62 @@ def refreshSelection():
     global searchResult
     global previewFrame
     length = len(searchResult)
-    print(cursor, length)
-    cursor %= length
+    cursor = 0
     for ch in previewFrame.winfo_children():
         ch.destroy()
-    
     if(length == 0):
         return None
-    
     for i, tabs in enumerate(searchResult):
-        if( i == cursor):
-            print(tabs)
-            lab = ttk.Label(previewFrame, text=tabs, borderwidth=3, relief= "flat") # why no effect?
-        else:
-            lab = ttk.Label(previewFrame, text=tabs, )
-            
+        lab = ttk.Label(previewFrame, text=tabs, justify="left")
         lab.grid(column=0, row=i)
-    
-    #TODO
-    
-    
+    refreshCursor( 0 )
     return None
 
+def refreshCursor(dir: int):
+    global cursor
+    global searchResult
+    global previewFrame
+    global targetLabel
+    length  = len(searchResult)
+    if( length == 0):
+        return None
+    cursor %= length
+    prevLabel = previewFrame.winfo_children()[cursor]
+    cursor += dir
+    cursor %= length
+    targetLabel = previewFrame.winfo_children()[cursor]
+    prevLabel["relief"] = ""
+    targetLabel["relief"] = "solid" 
+    return None
+
+# Main frame
 root = tk.Tk()
 root.title(mainAppTitle)
-root.geometry("+" + str(maxWidth // 2) + "+" + "100")
+root.geometry(""                 # width x height
+              + "+" + str(maxWidth // 2)    # x position
+              + "+" + "100")                # y position
 root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 root.wm_attributes("-alpha", 0)  # Set invisible
 root.resizable(0, 0)
 frm = ttk.Frame(root, padding=10)
 frm.grid()
-ttk.Label(frm, text="Adv. Alt Tab").grid(column=0, row=0)
+
+# Title label
+ttk.Label(frm, text="Adv. Alt Tab", width= 100).grid(column=0, row=0)
+
+# Quit button
+ttk.Button(frm, text="X", command=quitApp, width=10).grid(column=1, row=0)
+
+# Search box
+entryVar = tk.StringVar()
 textbox = ttk.Entry(
     frm,
-    width= 100,
-    # values=searchResult,
+    state="disabled",
+    textvariable=entryVar,
 )
-textbox.grid(column=0, row=1)
+textbox.grid(column=0, row=1, columnspan=2, sticky='we')
+
 
 previewFrame = ttk.Frame(frm)
 previewFrame.grid(column=0, row=2)
@@ -138,6 +156,6 @@ previewFrame.grid()
 
 # Loops
 keyboard.on_press(keyInputManager)
-keyboard.add_hotkey("ctrl+`", showApp)
-textbox.bind("<KeyRelease>", getMatchings)
+# keyboard.add_hotkey("ctrl+`", showApp)  # 한글 breaks add_hotkey.
+entryVar.trace_add(mode="write", callback=getMatchings)
 root.mainloop()

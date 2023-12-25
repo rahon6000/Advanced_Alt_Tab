@@ -2,12 +2,12 @@ import uiautomation as ui
 import psutil as ps
 import re
 
+TIMEOUT_SET = 0.00001
 class showWindows:
     # tabList[i] = (control, procName)
     tabList = {}
-    
     def __init__(self):
-        ui.SetGlobalSearchTimeout(0.0001)
+        ui.SetGlobalSearchTimeout(TIMEOUT_SET)
         
     def showWindow(self, control: ui.WindowControl):
         # print(
@@ -17,7 +17,6 @@ class showWindows:
         self.tabList[control.Name] = (control, processName)
         if(control.Name == 'Advanced Alt - Tab by THLee'):
             control.SetFocus()
-            print('focus set.')
         return None
 
     def getTab(self, control: ui.WindowControl, tabList: dict):
@@ -32,7 +31,7 @@ class showWindows:
             if processName == "msedge.exe":
                 # for Edge
                 container = ui.PaneControl(control, ClassName="TabContainerImpl")
-                if container and container.Exists(0.0001):
+                if container and container.Exists(TIMEOUT_SET):
                     tab = container.GetFirstChildControl()
                     while tab:
                         if tab.Name:
@@ -46,7 +45,7 @@ class showWindows:
                 # container = ui.TabControl(control, AriaRole='tablist', foundIndex=2)
                 container = control.GetFirstChildControl()
                 container = ui.TabControl(container, AriaRole="tablist", foundIndex=2)
-                if container and container.Exists(0.0001):
+                if container and container.Exists(TIMEOUT_SET):
                     tab = container.GetFirstChildControl()
                     while tab:
                         if tab.Name:
@@ -62,7 +61,7 @@ class showWindows:
             container = ui.ListControl(
                 control, searchDepth=4, AutomationId="TabListView", foundIndex=1
             )
-            if container and container.Exists(0.0001):
+            if container and container.Exists(TIMEOUT_SET):
                 tab = container.GetFirstChildControl()
                 while tab:
                     if tab.Name:
@@ -92,7 +91,7 @@ class showWindows:
         p = re.compile(regex, flags= re.IGNORECASE)
         keys = self.tabList.keys()
         for key in keys:
-            if p.search(key):
+            if p.search(key) or p.search( self.tabList[key][1] ):   # procName search
                 res.append(key)
         return res
 
