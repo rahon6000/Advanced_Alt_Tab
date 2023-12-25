@@ -12,7 +12,7 @@ mainAppTitle = "Advanced Alt - Tab by THLee"
 
 maxWidth = 640
 maxHeight = 400
-alpha = 0.7
+alpha = 0.8
 sw = showWindows.showWindows()
 searchResult = []
 cursor = 0
@@ -27,7 +27,6 @@ def keyInputManager(key: keyboard.KeyboardEvent) -> None:
     if ( keyboard.is_pressed('ctrl+`') ):
         showApp()
         return None
-    print(textbox["state"])
     if ( textbox["state"] == "disabled"):
         return None
     if key.name == "esc":

@@ -3,6 +3,8 @@ import psutil as ps
 import re
 
 TIMEOUT_SET = 0.00001
+useIAccessible = False
+
 class showWindows:
     # tabList[i] = (control, procName)
     tabList = {}
@@ -69,6 +71,29 @@ class showWindows:
                             tabList[tab.Name] = (tab, processName)
                     tab = tab.GetNextSiblingControl()
                 return None
+        
+        elif(useIAccessible):
+            # In general use IAccessible
+            searchDepth = 10                                      ## searchDepth for general case
+            queue: list[ui.WindowControl] = []
+            tab = control
+            while len(queue):
+                queue += tab.GetChildren()
+                tab = queue.pop()
+                ia = tab.GetLegacyIAccessiblePattern()
+                if (ia and ia.Role == 37 and ia.State == 3145728) :   ## 0x300000 == focusable, selectable.
+                    while tab:
+                        if tab.Name:
+                            # print(f"\t\t└Tab name : {tab.Name} ")
+                                tabList[tab.Name] = (tab, processName)
+                        tab = tab.GetNextSiblingControl()
+                    return None
+                length = len(queue)
+                queue += tab.GetChildren()
+                for i in range(length):
+                    tab = queue.pop()
+                    queue += tab.GetChildren()
+                searchDepth -= 1
 
         return None
 
