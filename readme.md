@@ -8,6 +8,8 @@ Search through multiple tabs with keyword
 - [x] Make GUI, Keyboard input
 - [ ] Make tab searching method non-blocking.
 - [ ] Build it to .exe
+- [ ] resolve false positive of Windows defender (Trojan:Win32/Wacatac.B!ml)
+- [ ] deal with dll requirements
 
 # Current support
 
