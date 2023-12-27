@@ -4,6 +4,7 @@ import re
 
 TIMEOUT_SET = 0.00001
 useIAccessible = False
+tabSig = '\t'
 
 class showWindows:
     # tabList[i] = (control, procName)
@@ -23,6 +24,7 @@ class showWindows:
         return None
 
     def getTab(self, control: ui.WindowControl, tabList: dict):
+        global tabSig
         # Tab implementaion lacks standardization.
         # should implement one by one?
 
@@ -39,7 +41,7 @@ class showWindows:
                     while tab:
                         if tab.Name:
                             # print(f"\t\t└Tab name : {tab.Name} ")
-                            tabList[tab.Name] = (tab, processName)
+                            tabList[tabSig + tab.Name] = (tab, processName)
                         tab = tab.GetNextSiblingControl()
                     return None
                 
@@ -53,7 +55,7 @@ class showWindows:
                     while tab:
                         if tab.Name:
                             # print(f"\t\t└Tab name : {tab.Name} ")
-                            tabList[tab.Name] = (tab, processName)
+                            tabList[tabSig + tab.Name] = (tab,  processName)
                         tab = tab.GetNextSiblingControl()
                     return None
 
@@ -69,7 +71,7 @@ class showWindows:
                 while tab:
                     if tab.Name:
                         # print(f"\t\t└Tab name : {tab.Name} ")
-                            tabList[tab.Name] = (tab, processName)
+                            tabList[tabSig + tab.Name] = (tab,  processName)
                     tab = tab.GetNextSiblingControl()
                 return None
         
@@ -86,7 +88,7 @@ class showWindows:
                     while tab:
                         if tab.Name:
                             # print(f"\t\t└Tab name : {tab.Name} ")
-                                tabList[tab.Name] = (tab, processName)
+                                tabList[tabSig + tab.Name] = (tab,  processName)
                         tab = tab.GetNextSiblingControl()
                     return None
                 length = len(queue)
