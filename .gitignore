@@ -2,3 +2,5 @@ dist
 build
 main.spec
 .venv
+@AutomationLog.txt
+test

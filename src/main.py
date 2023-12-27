@@ -90,8 +90,8 @@ def refreshSelection():
     if(length == 0):
         return None
     for i, tabs in enumerate(searchResult):
-        lab = ttk.Label(previewFrame, text=tabs, justify="left")
-        lab.grid(column=0, row=i)
+        lab = ttk.Label(previewFrame, text=tabs)
+        lab.grid(column=0, row=i, sticky='w')
     refreshCursor( 0 )
     return None
 
@@ -103,13 +103,16 @@ def refreshCursor(dir: int):
     length  = len(searchResult)
     if( length == 0):
         return None
-    cursor %= length
-    prevLabel = previewFrame.winfo_children()[cursor]
-    cursor += dir
-    cursor %= length
-    targetLabel = previewFrame.winfo_children()[cursor]
-    prevLabel["relief"] = ""
-    targetLabel["relief"] = "solid" 
+    try:
+        cursor %= length
+        prevLabel = previewFrame.winfo_children()[cursor]
+        cursor += dir
+        cursor %= length
+        targetLabel = previewFrame.winfo_children()[cursor]
+        prevLabel["relief"] = ""
+        targetLabel["relief"] = "solid" 
+    except:
+        cursor = 0
     return None
 
 # Main frame
@@ -142,7 +145,7 @@ textbox.grid(column=0, row=1, columnspan=2, sticky='we')
 
 
 previewFrame = ttk.Frame(frm)
-previewFrame.grid(column=0, row=2)
+previewFrame.grid(column=0, row=2, sticky='w', padx=(5,5))
 previewFrame.grid()
 # previewLabel = tk.Label(textbox, text = "test")
 # previewLabel.pack(anchor="s", )

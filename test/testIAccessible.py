@@ -14,7 +14,10 @@ def enum(wnd : ui.WindowControl, depth: int ) -> None:
         enum(i, depth + 1)
     return None
 
-testWnd = ui.WindowControl(None, 1)
-testWnd = testWnd.GetParentControl()
+ui.SetGlobalSearchTimeout(0.1)
+testWnd = ui.ControlFromHandle(ui.GetForegroundWindow())
+while testWnd.GetParentControl():
+    testWnd = testWnd.GetParentControl()
+print(testWnd)
 enum(testWnd, 0 )
 print('hello world!')
