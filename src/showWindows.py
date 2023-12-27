@@ -16,9 +16,10 @@ class showWindows:
         #     f"X\tWnd name : {control.Name}\tCls name : {control.ClassName}\tPID : {control.ProcessId}"
         # )
         processName = ps.Process(control.ProcessId).name()
-        self.tabList[control.Name] = (control, processName)
         if(control.Name == 'Advanced Alt - Tab by THLee'):
             control.SetFocus()
+            return None
+        self.tabList[control.Name] = (control, processName)
         return None
 
     def getTab(self, control: ui.WindowControl, tabList: dict):
@@ -103,7 +104,9 @@ class showWindows:
         # Sould be revised. more directly!
         # It fails when no windows present(?)
         self.tabList = {}
-        root = ui.WindowControl(searchFromControl=None, searchDepth=1).GetParentControl()
+        root = ui.ControlFromHandle(ui.GetForegroundWindow())
+        while root.GetParentControl():
+            root = root.GetParentControl()
         wnd = root.GetFirstChildControl()
         while wnd:
             self.showWindow(wnd)
